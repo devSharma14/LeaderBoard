@@ -63,7 +63,7 @@ export default function DashBoard() {
   const medium = data.find((item) => item.difficulty === 'Medium')?.count || 0;
   const hard = data.find((item) => item.difficulty === 'Hard')?.count || 0;
 
-  const { attendedContestsCount, rating, globalRanking, totalParticipants, topPercentage } = contestData || {};
+  const { attendedContestsCount, rating, globalRanking } = contestData || {};
 
   // Simplify Pie chart data to a single value
   const pieChartData = {
@@ -185,6 +185,19 @@ export default function DashBoard() {
               <div>Total Contests: {attendedContestsCount}</div>
               <div>Global Rank: {globalRanking}</div>
             </div>
+          </div>
+
+          {/* Display Total Questions Solved */}
+          <div
+            style={{
+              marginTop: '20px',
+              fontSize: '18px',
+              fontWeight: '600',
+              color: '#333',
+              textAlign: 'center',
+            }}
+          >
+            Total Questions Solved: {total}
           </div>
 
           {/* Bar Chart */}
