@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const SignIn = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900">
+    <div className="flex items-center justify-center min-h-screen bg-black">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -41,7 +41,7 @@ const SignIn = () => {
             </Link>
           </div>
 
-          <Link to="/dashboard">
+          <Link to="/form">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

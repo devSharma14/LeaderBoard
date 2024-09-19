@@ -1,63 +1,156 @@
-import React from 'react';
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate from React Router
+import { BarChart } from '@mui/x-charts/BarChart';
+import Button from '@mui/material/Button'; // Import Button from Material-UI
 
-const DashBoard = () => {
-    return (
-        <div className="flex flex-wrap gap-4 p-4">
-            <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <a href="#">
-                    <img className="rounded-t-lg" src="leetcode_icon.jpeg" alt="LeetCode" />
-                </a>
-                <div className="p-5">
-                    <a href="#">
-                        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Leetcode</h5>
-                    </a>
-                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">LeetCode is the best platform to help you enhance your skills, expand your knowledge and prepare for technical interviews.</p>
-                    <a href="#" className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        View leaderboard
-                        <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
-                        </svg>
-                    </a>
-                </div>
-            </div>
+export default function DashBoard() {
+  const navigate = useNavigate(); // Initialize useNavigate
 
-            <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <a href="#">
-                    <img className="rounded-t-lg" src="codeforces_icon.avif" alt="LeetCode" />
-                </a>
-                <div className="p-5">
-                    <a href="#">
-                        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Codeforces</h5>
-                    </a>
-                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Codeforces is a website that hosts competitive programming contests, and is used by programmers to learn and improve their skills</p>
-                    <a href="#" className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        View leaderboard
-                        <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
-                        </svg>
-                    </a>
-                </div>
-            </div>
+  const handleNavigate = () => {
+    navigate('/leaderboard'); // Navigate to /leaderboard when the button is clicked
+  };
 
-            <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <a href="#">
-                    <img className="rounded-t-lg" src="codechef_icon.jpg" alt="LeetCode" />
-                </a>
-                <div className="p-5">
-                    <a href="#">
-                        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Codechef</h5>
-                    </a>
-                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Codechef is a website that hosts competitive programming contests, and is used by programmers to learn and improve their skills</p>
-                    <a href="#" className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        View leaderboard
-                        <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
-                        </svg>
-                    </a>
-                </div>
-            </div>
-        </div>
-    );
-};
+  return (
+    <div 
+      style={{
+        backgroundColor: 'white',
+        padding: '20px',
+        borderRadius: '10px',
+        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+        fontFamily: 'Open Sans',
+      }}
+    >
+      <h2 
+        style={{
+          marginBottom: '20px',
+          fontSize: '24px',
+          fontWeight: '600',
+          color: '#333',
+          textAlign: 'center',
+        }}
+      >
+        Coding Performance
+      </h2>
+      
+      {/* Chart 1: Total Questions Solved */}
+      <h3 
+        style={{
+          marginBottom: '10px',
+          fontSize: '18px',
+          fontWeight: '500',
+          color: '#555',
+          textAlign: 'center',
+        }}
+      >
+        Total Questions Solved
+      </h3>
+      <BarChart
+        series={[{ data: [200, 150, 100] }]}
+        height={250}
+        width={400}
+        xAxis={[
+          {
+            data: ['LeetCode', 'CodeForces', 'CodeChef'],
+            scaleType: 'band',
+            axis: {
+              show: true,
+              label: 'Platform',
+              style: {
+                stroke: 'black', 
+                ticks: { stroke: 'black' },
+                tickLabels: { fill: 'black', fontSize: '14px' },
+                grid: { stroke: 'rgba(0, 0, 0, 0.2)' },
+              },
+            },
+          },
+        ]}
+        yAxis={[
+          {
+            axis: {
+              show: true,
+              label: 'Total Questions',
+              style: {
+                stroke: 'black', 
+                ticks: { stroke: 'black' },
+                tickLabels: { fill: 'black', fontSize: '14px' },
+                grid: { stroke: 'rgba(0, 0, 0, 0.2)' },
+              },
+            },
+          },
+        ]}
+        margin={{ top: 10, bottom: 50, left: 50, right: 10 }}
+        barGapRatio={0.2}
+        barRadius={4}
+      />
+      
+      {/* Chart 2: Current Rating */}
+      <h3 
+        style={{
+          marginBottom: '10px',
+          marginTop: '30px',
+          fontSize: '18px',
+          fontWeight: '500',
+          color: '#555',
+          textAlign: 'center',
+        }}
+      >
+        Current Rating
+      </h3>
+      <BarChart
+        series={[{ data: [1800, 1600, 1400] }]}
+        height={250}
+        width={400}
+        xAxis={[
+          {
+            data: ['LeetCode', 'CodeForces', 'CodeChef'],
+            scaleType: 'band',
+            axis: {
+              show: true,
+              label: 'Platform',
+              style: {
+                stroke: 'black', 
+                ticks: { stroke: 'black' },
+                tickLabels: { fill: 'black', fontSize: '14px' },
+                grid: { stroke: 'rgba(0, 0, 0, 0.2)' },
+              },
+            },
+          },
+        ]}
+        yAxis={[
+          {
+            axis: {
+              show: true,
+              label: 'Rating',
+              style: {
+                stroke: 'black', 
+                ticks: { stroke: 'black' },
+                tickLabels: { fill: 'black', fontSize: '14px' },
+                grid: { stroke: 'rgba(0, 0, 0, 0.2)' },
+              },
+            },
+          },
+        ]}
+        margin={{ top: 10, bottom: 50, left: 50, right: 10 }}
+        barGapRatio={0.2}
+        barRadius={4}
+      />
 
-export default DashBoard;
+      {/* Check Leaderboard Button */}
+      <div style={{ textAlign: 'center', marginTop: '40px' }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleNavigate}
+          style={{
+            padding: '10px 20px',
+            fontSize: '18px',
+            fontWeight: '600',
+            borderRadius: '8px',
+          }}
+        >
+          Check out Leaderboards!!
+        </Button>
+      </div>
+    </div>
+  );
+}
