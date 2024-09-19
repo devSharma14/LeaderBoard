@@ -1,13 +1,16 @@
 import React from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Form = () => {
   const navigate = useNavigate();
 
+  const [lcHandle, setLcHandle] = useState('');
+
   const handleSubmit = (e) => {
     e.preventDefault();
     // After form submission, redirect to /dashboard
-    navigate('/dashboard');
+    navigate(`/dashboard?username=${lcHandle}`);
   };
 
   return (
@@ -107,10 +110,12 @@ const Form = () => {
 
       {/* LC Handle Field */}
       <div className="relative z-0 w-full mb-8 group">
-        <input
+      <input
           type="text"
           name="lc_handle"
           id="lc_handle"
+          value={lcHandle}
+          onChange={(e) => setLcHandle(e.target.value)}
           className="block py-4 px-0 w-full text-lg text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           placeholder=" "
           required
