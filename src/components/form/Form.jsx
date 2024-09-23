@@ -1,21 +1,20 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { GlobalContext } from '../../context/GlobalContext';
 
 const Form = () => {
   const navigate = useNavigate();
-
-  const [lcHandle, setLcHandle] = useState('');
+  const { formData, updateFormData } = useContext(GlobalContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // After form submission, redirect to /dashboard
-    navigate(`/dashboard?username=${lcHandle}`);
+    console.log("Form submitted with data:", formData); // Debugging output
+    navigate('/dashboard');
   };
 
   return (
-    <form 
-      onSubmit={handleSubmit} 
+    <form
+      onSubmit={handleSubmit}
       className="max-w-md mx-auto p-8 border border-gray-300 rounded-lg shadow-md"
     >
       {/* Name Field */}
@@ -107,23 +106,19 @@ const Form = () => {
           Year of Passing Out
         </label>
       </div>
-
       {/* LC Handle Field */}
       <div className="relative z-0 w-full mb-8 group">
-      <input
+        <input
           type="text"
           name="lc_handle"
           id="lc_handle"
-          value={lcHandle}
-          onChange={(e) => setLcHandle(e.target.value)}
+          value={formData.lcHandle}
+          onChange={(e) => updateFormData({ lcHandle: e.target.value })}
           className="block py-4 px-0 w-full text-lg text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           placeholder=" "
           required
         />
-        <label
-          htmlFor="lc_handle"
-          className="peer-focus:font-medium absolute text-lg text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 left-0"
-        >
+        <label htmlFor="lc_handle" className="peer-focus:font-medium ...">
           Leetcode Handle
         </label>
       </div>
@@ -134,14 +129,13 @@ const Form = () => {
           type="text"
           name="codeforces_handle"
           id="codeforces_handle"
+          value={formData.cfHandle}
+          onChange={(e) => updateFormData({ cfHandle: e.target.value })}
           className="block py-4 px-0 w-full text-lg text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           placeholder=" "
           required
         />
-        <label
-          htmlFor="codeforces_handle"
-          className="peer-focus:font-medium absolute text-lg text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 left-0"
-        >
+        <label htmlFor="codeforces_handle" className="peer-focus:font-medium ...">
           Codeforces Handle
         </label>
       </div>
@@ -152,25 +146,26 @@ const Form = () => {
           type="text"
           name="codechef_handle"
           id="codechef_handle"
+          value={formData.ccHandle}
+          onChange={(e) => updateFormData({ ccHandle: e.target.value })}
           className="block py-4 px-0 w-full text-lg text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           placeholder=" "
           required
         />
-        <label
-          htmlFor="codechef_handle"
-          className="peer-focus:font-medium absolute text-lg text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 left-0"
-        >
+        <label htmlFor="codechef_handle" className="peer-focus:font-medium ...">
           Codechef Handle
         </label>
       </div>
 
       {/* Submit Button */}
-      <button
-        type="submit"
-        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-lg w-full sm:w-auto px-6 py-3 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-      >
-        Submit
-      </button>
+      <div className="flex justify-center">
+        <button
+          type="submit"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Submit
+        </button>
+      </div>
     </form>
   );
 };
