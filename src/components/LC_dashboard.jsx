@@ -1,31 +1,15 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../context/GlobalContext';
-import Button from '@mui/material/Button';
-import { Bar } from 'react-chartjs-2';
-import { Chart, registerables } from 'chart.js';
-Chart.register(...registerables);
-
 
 export default function LC_dashboard() {
-  const navigate = useNavigate();
   const { formData } = useContext(GlobalContext);
-  const { lcHandle, cfHandle, ccHandle } = formData; // Destructure from formData
+  const { lcHandle, cfHandle, ccHandle } = formData;
 
-  const [leetcodeData, setLeetcodeData] = useState([]);
-  const [codeforcesData, setCodeforcesData] = useState([]);
+  const [leetcodeData, setLeetcodeData] = useState(null);
+  const [codeforcesData, setCodeforcesData] = useState(null);
+  const [codechefData, setCodechefData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
-  const totalLeetCode = leetcodeData.find((item) => item.difficulty === 'All')?.count || 0;
-  const easyLeetCode = leetcodeData.find((item) => item.difficulty === 'Easy')?.count || 0;
-  const mediumLeetCode = leetcodeData.find((item) => item.difficulty === 'Medium')?.count || 0;
-  const hardLeetCode = leetcodeData.find((item) => item.difficulty === 'Hard')?.count || 0;
-
-  const totalCodeforces = codeforcesData.length || 0;
-  const easyCodeforces = codeforcesData.filter((item) => item.difficulty === 'Easy').length;
-  const mediumCodeforces = codeforcesData.filter((item) => item.difficulty === 'Medium').length;
-  const hardCodeforces = codeforcesData.filter((item) => item.difficulty === 'Hard').length;
 
   const fetchLeetcodeData = useCallback(async (username) => {
     try {
@@ -34,22 +18,58 @@ export default function LC_dashboard() {
       setLeetcodeData(result[username]?.submitStatsGlobal?.acSubmissionNum || []);
       setLoading(false);
     } catch (err) {
-      setError('Failed to fetch LeetCode data.');
+      setError('Failed to fetch Leetcode data');
       setLoading(false);
     }
   }, []);
 
   const fetchCodeforcesData = useCallback(async (username) => {
     try {
-      const response = await fetch(`https://codeforces.com/api/user.status?handle=${username}`);
+      const response = await fetch(`https://codeforces.com/api/user.info?handles=${username}`);
       const result = await response.json();
-      setCodeforcesData(result.result || []);
+      setCodeforcesData(result.result[0]);
       setLoading(false);
     } catch (err) {
       setError('Failed to fetch Codeforces data.');
       setLoading(false);
     }
   }, []);
+
+  const fetchCodechefData = useCallback(async (username) => {
+    try {
+      const response = await fetch(`https://codechef-api.vercel.app/handle/${username}`);
+      const result = await response.json();
+      setCodechefData(result || {});
+      setLoading(false);
+    } catch (err) {
+      setError('Failed to fetch Codechef data.');
+      setLoading(false);
+    }
+  }, []);
+
+  // Leetcode variables
+  const totalLeetCode = leetcodeData?.find((item) => item.difficulty === 'All')?.count || 0;
+  const easyLeetCode = leetcodeData?.find((item) => item.difficulty === 'Easy')?.count || 0;
+  const mediumLeetCode = leetcodeData?.find((item) => item.difficulty === 'Medium')?.count || 0;
+  const hardLeetCode = leetcodeData?.find((item) => item.difficulty === 'Hard')?.count || 0;
+
+
+  // Codeforces Variables
+  const codeforcesCurrentRating = codeforcesData?.rating || 0;
+  const codeforcesHighestRating = codeforcesData?.maxRating || 0;
+  const codeforcesRank = codeforcesData?.rank || 'N/A';
+  const codeforcesContributions = codeforcesData?.contribution || 0;
+  const codeforcesFriends = codeforcesData?.friendOfCount || 0;
+  const codeforcesMaxRank = codeforcesData?.maxRank || 0;
+
+  // Codechef Variables
+  const codechefName = codechefData.name || '';
+  const codechefCurrentRating = codechefData.currentRating || 0;
+  const codechefHighestRating = codechefData.highestRating || 0;
+  const codechefGlobalRank = codechefData.globalRank || 'N/A';
+  const codechefCountryRank = codechefData.countryRank || 'N/A';
+  const codechefStars = codechefData.stars || 'N/A';
+  const codechefCountryName = codechefData.countryName || 'N/A';
 
   useEffect(() => {
     if (lcHandle) {
@@ -58,109 +78,125 @@ export default function LC_dashboard() {
     if (cfHandle) {
       fetchCodeforcesData(cfHandle);
     }
-  }, [lcHandle, cfHandle, fetchLeetcodeData, fetchCodeforcesData]);
+    if (ccHandle) {
+      fetchCodechefData(ccHandle);
+    }
+  }, [lcHandle, fetchLeetcodeData, cfHandle, ccHandle, fetchCodeforcesData, fetchCodechefData]);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <p style={{ color: 'white' }}>Loading...</p>;
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return <p style={{ color: 'white' }}>{error}</p>;
   }
 
-  // Prepare chart data for LeetCode
-  const leetcodeChartData = {
-    labels: ['Easy', 'Medium', 'Hard'],
-    datasets: [
-      {
-        label: 'LeetCode Questions',
-        data: [easyLeetCode, mediumLeetCode, hardLeetCode],
-        backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
-      },
-    ],
-  };
-
-  // Prepare chart data for Codeforces
-  const codeforcesChartData = {
-    labels: ['Easy', 'Medium', 'Hard'],
-    datasets: [
-      {
-        label: 'Codeforces Questions',
-        data: [easyCodeforces, mediumCodeforces, hardCodeforces],
-        backgroundColor: ['#2196f3', '#ff5722', '#9c27b0'],
-      },
-    ],
-  };
-
-  const chartOptions = {
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
-  };
-
   return (
-    <div>
-      <div
-        style={{
-          backgroundColor: 'white',
-          padding: '20px',
-          borderRadius: '10px',
-          boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-          fontFamily: 'Open Sans',
-        }}
-      >
-        <h2 style={{ marginBottom: '20px', fontSize: '24px', fontWeight: '600', color: '#333', textAlign: 'center' }}>
-          Coding Performance Dashboard
-        </h2>
+    <div style={{ color: 'white' }}>
+      <h2 style={{ textAlign: 'center' }}>Coding Performance Dashboard</h2>
 
-        {/* Display User Handles */}
-        <div style={{ marginBottom: '20px', fontSize: '18px', fontWeight: '600', textAlign: 'center' }}>
-          <p>Leetcode Handle: {lcHandle}</p>
-          <p>Codeforces Handle: {cfHandle}</p>
-          <p>Codechef Handle: {ccHandle}</p>
-        </div>
+      {/* LeetCode Table */}
 
-        {/* LeetCode Section */}
-        <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '10px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', marginTop: '20px' }}>
-          <h3 style={{ textAlign: 'center' }}>LeetCode Data</h3>
-          <div style={{ marginTop: '20px' }}>
-            <Bar data={leetcodeChartData} options={chartOptions} />
-          </div>
-          <div style={{ marginTop: '20px', fontSize: '18px', fontWeight: '600', color: '#333', textAlign: 'center' }}>
-            Total Questions Solved on LeetCode: {totalLeetCode}
-          </div>
-        </div>
+      <table style={{ width: '100%', margin: '20px 0', border: '1px solid #ddd', textAlign: 'center', color: 'white' }}>
+        <thead>
+          <tr>
+            <th colSpan="2">LeetCode Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Total Submissions</td>
+            <td>{totalLeetCode}</td>
+          </tr>
+          <tr>
+            <td>Easy</td>
+            <td>{easyLeetCode}</td>
+          </tr>
+          <tr>
+            <td>Medium</td>
+            <td>{mediumLeetCode}</td>
+          </tr>
+          <tr>
+            <td>Hard</td>
+            <td>{hardLeetCode}</td>
+          </tr>
+        </tbody>
+      </table>
 
-        {/* Codeforces Section */}
-        <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '10px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', marginTop: '20px' }}>
-          <h3 style={{ textAlign: 'center' }}>Codeforces Data</h3>
-          <div style={{ marginTop: '20px' }}>
-            <Bar data={codeforcesChartData} options={chartOptions} />
-          </div>
-          <div style={{ marginTop: '20px', fontSize: '18px', fontWeight: '600', color: '#333', textAlign: 'center' }}>
-            Total Questions Solved on Codeforces: {totalCodeforces}
-          </div>
-        </div>
 
-        {/* Button to Leaderboard */}
-        <div style={{ textAlign: 'center', marginTop: '40px' }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate('/leaderboard')}
-            style={{
-              padding: '10px 20px',
-              fontSize: '18px',
-              fontWeight: '600',
-              borderRadius: '8px',
-            }}
-          >
-            Check out Leaderboards
-          </Button>
-        </div>
-      </div>
+      {/* Codeforces Table */}
+      <table style={{ width: '100%', margin: '20px 0', border: '1px solid #ddd', textAlign: 'center', color: 'white' }}>
+        <thead>
+          <tr>
+            <th colSpan="2">Codeforces Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Current Rating</td>
+            <td>{codeforcesCurrentRating}</td>
+          </tr>
+          <tr>
+            <td>Highest Rating</td>
+            <td>{codeforcesHighestRating}</td>
+          </tr>
+          <tr>
+            <td>Total Friends</td>
+            <td>{codeforcesFriends}</td>
+          </tr>
+          <tr>
+            <td>Rank</td>
+            <td>{codeforcesRank}</td>
+          </tr>
+          <tr>
+            <td>Max Rank</td>
+            <td>{codeforcesMaxRank}</td>
+          </tr>
+          <tr>
+            <td>Total Contributions</td>
+            <td>{codeforcesContributions}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      {/* Codechef Table */}
+      <table style={{ width: '100%', margin: '20px 0', border: '1px solid #ddd', textAlign: 'center', color: 'white' }}>
+        <thead>
+          <tr>
+            <th colSpan="2">CodeChef Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Username</td>
+            <td>{codechefName}</td>
+          </tr>
+          <tr>
+            <td>Current Rating</td>
+            <td>{codechefCurrentRating}</td>
+          </tr>
+          <tr>
+            <td>Highest Rating</td>
+            <td>{codechefHighestRating}</td>
+          </tr>
+          <tr>
+            <td>Global Rank</td>
+            <td>{codechefGlobalRank}</td>
+          </tr>
+          <tr>
+            <td>Country Rank</td>
+            <td>{codechefCountryRank}</td>
+          </tr>
+          <tr>
+            <td>Stars</td>
+            <td>{codechefStars}</td>
+          </tr>
+          <tr>
+            <td>Country</td>
+            <td>{codechefCountryName}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 }
