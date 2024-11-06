@@ -5,6 +5,7 @@ import SignUp from './components/authentication/SignUp';
 import SignIn from './components/authentication/SignIn';
 import Form from "./components/form/Form";
 import LC_dashboard from './components/LC_dashboard';
+// import { Accertinity } from './components/accertinity';
 import { GlobalProvider } from './context/GlobalContext';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/dashboard" element={<LC_dashboard />} />
         {/* <Route path="/cfdashboard" element={<CF_dashboard />} />
         <Route path="/ccdashboard" element={<CC_dashboard />} /> */}
+        {/* <Route path="/accertinity" element={<Accertinity/>} /> */}
         <Route path="/form" element={<Form />} />
       </Routes>
     </GlobalProvider>

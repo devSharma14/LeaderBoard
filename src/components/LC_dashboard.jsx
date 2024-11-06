@@ -5,6 +5,7 @@ export default function LC_dashboard() {
   const { formData } = useContext(GlobalContext);
   const { lcHandle, cfHandle, ccHandle } = formData;
 
+  const [leetcodeRatingData, setLeetcodeRatingData] = useState(null);
   const [leetcodeData, setLeetcodeData] = useState(null);
   const [codeforcesData, setCodeforcesData] = useState(null);
   const [codechefData, setCodechefData] = useState({});
@@ -23,10 +24,29 @@ export default function LC_dashboard() {
     }
   }, []);
 
+  const fetchLeetcodeRatingData = useCallback(async (username) => {
+    try {
+      const response = await fetch(`https://alfa-leetcode-api.onrender.com/${username}/contest`);
+      const result = await response.json();
+
+      // Log to confirm structure
+      console.log("lc rating result: ", result);
+
+      // Set the data directly as result since it's not nested under result.result[0]
+      setLeetcodeRatingData(result);
+      setLoading(false);
+    } catch (err) {
+      console.log("Error fetching Leetcode data:", err.message);
+      setLoading(false);
+    }
+  }, []);
+
+
   const fetchCodeforcesData = useCallback(async (username) => {
     try {
       const response = await fetch(`https://codeforces.com/api/user.info?handles=${username}`);
       const result = await response.json();
+
       setCodeforcesData(result.result[0]);
       setLoading(false);
     } catch (err) {
@@ -53,6 +73,15 @@ export default function LC_dashboard() {
   const mediumLeetCode = leetcodeData?.find((item) => item.difficulty === 'Medium')?.count || 0;
   const hardLeetCode = leetcodeData?.find((item) => item.difficulty === 'Hard')?.count || 0;
 
+  // Leetcode rating variables
+  const contestAttend = leetcodeRatingData?.contestAttend || 0;
+  const contestRating = leetcodeRatingData?.contestRating || 0;
+  const contestGlobalRanking = leetcodeRatingData?.contestGlobalRanking || 0;
+  const totalParticipants = leetcodeRatingData?.totalParticipants || 0;
+  const contestTopPercentage = leetcodeRatingData?.contestTopPercentage || 0;
+  const contestBadge = leetcodeRatingData?.contestBadges?.name || 'No Badge';
+
+  // console.log("contestAttend:", contestAttend);
 
   // Codeforces Variables
   const codeforcesCurrentRating = codeforcesData?.rating || 0;
@@ -74,6 +103,7 @@ export default function LC_dashboard() {
   useEffect(() => {
     if (lcHandle) {
       fetchLeetcodeData(lcHandle);
+      fetchLeetcodeRatingData(lcHandle);
     }
     if (cfHandle) {
       fetchCodeforcesData(cfHandle);
@@ -81,7 +111,7 @@ export default function LC_dashboard() {
     if (ccHandle) {
       fetchCodechefData(ccHandle);
     }
-  }, [lcHandle, fetchLeetcodeData, cfHandle, ccHandle, fetchCodeforcesData, fetchCodechefData]);
+  }, [lcHandle, fetchLeetcodeRatingData, fetchLeetcodeData, cfHandle, ccHandle, fetchCodeforcesData, fetchCodechefData]);
 
   if (loading) {
     return <p style={{ color: 'white' }}>Loading...</p>;
@@ -120,8 +150,33 @@ export default function LC_dashboard() {
             <td>Hard</td>
             <td>{hardLeetCode}</td>
           </tr>
+          <tr>
+            <td>Total Contests Attended</td>
+            <td>{contestAttend}</td>
+          </tr>
+          <tr>
+            <td>Contest Rating</td>
+            <td>{contestRating.toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td>Global Ranking</td>
+            <td>{contestGlobalRanking}</td>
+          </tr>
+          <tr>
+            <td>Total Participants</td>
+            <td>{totalParticipants}</td>
+          </tr>
+          <tr>
+            <td>Top Percentage</td>
+            <td>{contestTopPercentage}%</td>
+          </tr>
+          <tr>
+            <td>Contest Badge</td>
+            <td>{contestBadge}</td>
+          </tr>
         </tbody>
       </table>
+
 
 
       {/* Codeforces Table */}
